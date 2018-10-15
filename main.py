@@ -43,7 +43,7 @@ class RollDiceHandler(AbstractRequestHandler):
     def handle(self, handler_input):
         dice = randint(1,6)
         
-        speech = "Dice number is " + dice
+        speech = "Dice number is " + str(dice)
         
         handler_input.response_builder.speak(speech).set_card(
             SimpleCard(SKILL_NAME, speech))
