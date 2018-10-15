@@ -31,13 +31,14 @@ class DefaultHandler(AbstractRequestHandler):
         speech = "You can ask me to roll a dice or flip a coin"
         
         handler_input.response_builder.speak(speech).set_card(
-            SimpleCard(SKILL_NAME, speech))
+            SimpleCard(SKILL_NAME, speech)).ask(speech)
         return handler_input.response_builder.response
 
 class RollDiceHandler(AbstractRequestHandler):
     
     def can_handle(self, handler_input):
-        return(is_request_type("RollADice")(handler_input))
+        return(is_request_type("RollADice")(handler_input) or
+                is_intent_name("RollADice")(handler_input))
         
     def handle(self, handler_input):
         dice = randint(1,6)
@@ -51,7 +52,8 @@ class RollDiceHandler(AbstractRequestHandler):
 class FlipCoinHandler(AbstractRequestHandler):
     
     def can_handle(self, handler_input):
-        return(is_request_type("FlipACoin")(handler_input))
+        return(is_request_type("FlipACoin")(handler_input) or
+                is_intent_name("FlipACoin")(handler_input))
         
     def handle(self, handler_input):
         coin = randint(0,1)
