@@ -15,6 +15,7 @@ from random import randint
 
 
 SKILL_NAME = "Dice Coin Coins"
+dice_slot = "dice"
 
 sb = SkillBuilder()
 # logger = logging.getLogger(_name_)
@@ -41,9 +42,17 @@ class RollDiceHandler(AbstractRequestHandler):
                 is_intent_name("RollADice")(handler_input))
         
     def handle(self, handler_input):
-        dice = randint(1,6)
+        slots = handler_input.request_envelope.request.intent.slots
         
-        speech = "Dice number is " + str(dice)
+        if dice_slot in slots:
+            numberOfSides = slots[dice_slot].value
+            if numberOfSides is not None:
+                dice = randint(1,int(numberOfSides))
+            else:
+                dice = randint(1,6)
+            speech = "Dice number is " + str(dice)
+        else:
+            speech = "Sorry. There was an issue with the request."
         
         handler_input.response_builder.speak(speech).set_card(
             SimpleCard(SKILL_NAME, speech))
