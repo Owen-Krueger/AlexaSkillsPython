@@ -28,28 +28,40 @@ facts = [
 	'The Titanic could hold a maximum of 3,547 people',
 	'The Titanic was equipped to hold 64 lifeboats',
 	'The Titanic was actually carrying 20 lifeboats',
-	'14,000 gallons of drinking water were used every 24 hours'
+	'14,000 gallons of drinking water were used every 24 hours',
 ]
 
 sb = SkillBuilder()
 
 class TitanicFactHandler(AbstractRequestHandler):
     
-    def can_handle(self, handler_input):
-        return(is_request_type("LaunchRequest")(handler_input) or
-                is_intent_name("NewTitanicFactRequest")(handler_input))
+	def can_handle(self, handler_input):
+		return(is_request_type("LaunchRequest")(handler_input) or
+				is_intent_name("NewTitanicFact")(handler_input))
         
-    def handle(self, handler_input):
-        logging.info("Starting Default")
-        
+	def handle(self, handler_input):
+		logging.info("Starting Default")
+
 		titanic_fact = random.choice(facts)
 		speech = FACT_MESSAGE + titanic_fact
-        
-        handler_input.response_builder.speak(speech).set_card(
-            SimpleCard(SKILL_NAME, speech))
-        return handler_input.response_builder.response
 
+		handler_input.response_builder.speak(speech).set_card(
+			SimpleCard(SKILL_NAME, speech))
+		return handler_input.response_builder.response
 
-sb.add_request_handler(DefaultHandler())
+class HelpHandler(AbstractRequestHandler):
+	
+	def can_handle(self, handler_input):
+		return(is_intent_name("AMAZON.HelpIntent")(handler_input))
+		
+	def handle(self, handler_input):
+		speech = "You can ask me for a Titanic fact!"
+		
+		handler_input.response_builder.speak(speech).set_card(
+            SimpleCard(SKILL_NAME, speech)).ask(speech)
+		return handler_input.response_builder.response
+
+sb.add_request_handler(TitanicFactHandler())
+sb.add_request_handler(HelpHandler())
 
 lambda_handler = sb.lambda_handler()
