@@ -74,9 +74,20 @@ class FlipCoinHandler(AbstractRequestHandler):
         handler_input.response_builder.speak(speech).set_card(
             SimpleCard(SKILL_NAME, speech))
         return handler_input.response_builder.response
+        
+class CancelOrStopHandler(AbstractRequestHandler):
+    
+    def can_handle(self, handler_input):
+        return(is_intent_name("AMAZON.CancelIntent")(handler_input) or
+            is_intent_name("AMAZON.StopIntent")(handler_input))
+    
+    def handle(self, handler_input):
+        handler_input.response_builder.speak("Goodbye")
+        return handler_input.response_builder.response
 
 sb.add_request_handler(DefaultHandler())
 sb.add_request_handler(RollDiceHandler())
 sb.add_request_handler(FlipCoinHandler())
+sb.add_request_handler(CancelOrStopHandler())
 
 lambda_handler = sb.lambda_handler()
