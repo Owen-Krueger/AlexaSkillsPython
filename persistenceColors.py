@@ -15,7 +15,7 @@ sb = SkillBuilder()
 class DefaultHandler(AbstractRequestHandler):
 
 	def can_handle(self, handler_input):
-		return(is_request_type("LaunchRequest")(handler_input)
+		return(is_request_type("LaunchRequest")(handler_input))
 		
 	def handle(self, handler_input):
 		speech = "Hi"
@@ -27,10 +27,14 @@ class DefaultHandler(AbstractRequestHandler):
 class SetFavoriteColorHandler(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
-		return(is_intent_name("SetFavoriteColor")(handler_input)
+		return(is_intent_name("SetFavoriteColor")(handler_input))
 		
 	def handle(self, handler_input):
-		speech = ""
+	
+		if FavoriteColor_slot in slots:
+			favoriteColor = slots[FavoriteColor].value
+		
+		speech = "Got it. Your favorite color is " + favoriteColor
 		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
@@ -39,7 +43,7 @@ class SetFavoriteColorHandler(AbstractRequestHandler):
 class GetFavoriteColorHandler(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
-		return(is_intent_name("GetFavoriteColor")(handler_input)
+		return(is_intent_name("GetFavoriteColor")(handler_input))
 		
 	def handle(self, handler_input):
 		speech = ""
@@ -51,7 +55,7 @@ class GetFavoriteColorHandler(AbstractRequestHandler):
 class HelpHandler(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
-		return(is_request_type("LaunchRequest")(handler_input)
+		return(is_request_type("LaunchRequest")(handler_input))
 		
 	def handle(self, handler_input):
 		speech = "Hi"
@@ -63,7 +67,7 @@ class HelpHandler(AbstractRequestHandler):
 class CancelOrStopHandler(AbstractRequestHandler):
 
 	def can_handle(self, handler_input):
-		return(is_request_type("LaunchRequest")(handler_input)
+		return(is_request_type("LaunchRequest")(handler_input))
 		
 	def handle(self, handler_input):
 		speech = "Goodbye"
