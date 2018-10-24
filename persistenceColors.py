@@ -7,6 +7,7 @@ from ask_sdk_core.handler_input import HandlerInput
 
 from ask_sdk_model.ui import SimpleCard
 from ask_sdk_model import Response
+import boto3
 
 SKILL_NAME = "Favorite Color"
 
@@ -30,9 +31,16 @@ class SetFavoriteColorHandler(AbstractRequestHandler):
 		return(is_intent_name("SetFavoriteColor")(handler_input))
 		
 	def handle(self, handler_input):
+		slots = handler_input.request_envelope.request.intent.slots
 	
-		if FavoriteColor_slot in slots:
-			favoriteColor = slots[FavoriteColor].value
+		if 'FavoriteColor' in slots:
+			favoriteColor = slots['FavoriteColor'].value
+			
+			dynamodb = boto3.resource('dynamodb', region_name='eu-west-1')
+			table = dynamodb.Table('FavoriteColor')
+		
+			table.put_item(
+				Item = {'Color' : favoriteColor})
 		
 		speech = "Got it. Your favorite color is " + favoriteColor
 		
