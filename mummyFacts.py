@@ -40,7 +40,7 @@ class MummyFactHandler(AbstractRequestHandler):
     
 	def can_handle(self, handler_input):
 		return(is_request_type("LaunchRequest")(handler_input) or
-				is_intent_name("NewMummyFacts")(handler_input))
+				is_intent_name("NewMummyFact")(handler_input))
         
 	def handle(self, handler_input):
 		logging.info("Starting Default")
