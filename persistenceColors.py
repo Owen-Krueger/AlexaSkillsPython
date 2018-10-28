@@ -1,3 +1,5 @@
+import logging
+
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import (
     AbstractRequestHandler, AbstractExceptionHandler,
@@ -8,9 +10,16 @@ from ask_sdk_core.handler_input import HandlerInput
 from ask_sdk_model.ui import SimpleCard
 from ask_sdk_model import Response
 
+import boto3
+from boto3 import resource
+
 SKILL_NAME = "Favorite Color"
 
 sb = SkillBuilder()
+logger = logging.getLogger()
+
+dynamodb = resource('dynamodb')
+table = dynamodb.Table('FavoriteColor')
 
 class DefaultHandler(AbstractRequestHandler):
 
@@ -30,11 +39,29 @@ class SetFavoriteColorHandler(AbstractRequestHandler):
 		return(is_intent_name("SetFavoriteColor")(handler_input))
 		
 	def handle(self, handler_input):
+<<<<<<< HEAD
 	
 		if FavoriteColor_slot in slots:
 			favoriteColor = slots[FavoriteColor].value
 		
 		speech = "Got it. Your favorite color is " + favoriteColor
+=======
+		slots = handler_input.request_envelope.request.intent.slots
+	
+		colorTable = table.get_item('Color')
+		if 'FavoriteColor' in slots:
+			favoriteColor = slots['FavoriteColor'].value
+			
+			if favoriteColor is not None:
+		
+				table.put_item(
+					Item = {'Color' : favoriteColor})
+					
+				speech = "Got it. Your favorite color is " + favoriteColor
+				
+			else:
+				speech = "Sorry, we had an issue"
+>>>>>>> 25d6f4cbe704f3b1c390a101c939a2ec4d2a92e2
 		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
@@ -46,6 +73,10 @@ class GetFavoriteColorHandler(AbstractRequestHandler):
 		return(is_intent_name("GetFavoriteColor")(handler_input))
 		
 	def handle(self, handler_input):
+		slots = handler_input.request_envelope.request.intent.slots
+
+		#filtering_exp = Key('Color')
+		
 		speech = ""
 		
 		handler_input.response_builder.speak(speech).set_card(
