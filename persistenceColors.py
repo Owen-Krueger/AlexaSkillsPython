@@ -1,3 +1,5 @@
+import logging
+
 from ask_sdk_core.skill_builder import SkillBuilder
 from ask_sdk_core.dispatch_components import (
     AbstractRequestHandler, AbstractExceptionHandler,
@@ -7,11 +9,14 @@ from ask_sdk_core.handler_input import HandlerInput
 
 from ask_sdk_model.ui import SimpleCard
 from ask_sdk_model import Response
+
 import boto3
+from boto3 import resource
 
 SKILL_NAME = "Favorite Color"
 
 sb = SkillBuilder()
+logger = logging.getLogger()
 
 class DefaultHandler(AbstractRequestHandler):
 
@@ -19,7 +24,7 @@ class DefaultHandler(AbstractRequestHandler):
 		return(is_request_type("LaunchRequest")(handler_input))
 		
 	def handle(self, handler_input):
-		speech = "Hi"
+		speech = "You can ask me to remember a color or to tell you what your favorite color is"
 		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
@@ -36,16 +41,19 @@ class SetFavoriteColorHandler(AbstractRequestHandler):
 		if 'FavoriteColor' in slots:
 			favoriteColor = slots['FavoriteColor'].value
 			
-			dynamodb = boto3.resource('dynamodb', region_name='eu-west-1')
-			table = dynamodb.Table('FavoriteColor')
+			if favoriteColor is not None:
 		
-			table.put_item(
-				Item = {'Color' : favoriteColor})
-		
-		speech = "Got it. Your favorite color is " + favoriteColor
+				handler_input.attributes_manager.session_attributes['favoriteColor'] = favoriteColor;
+					
+				speech = "Got it. Your favorite color is " + handler_input.attributes_manager.session_attributes['favoriteColor']
+				reprompt = "You can ask me what your favorite color is"
+				
+			else:
+				speech = "Sorry, we had an issue"
+				reprompt = "Try to ask me to remember another favorite color"
 		
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech))
+			SimpleCard(SKILL_NAME, speech)).ask(reprompt)
 		return handler_input.response_builder.response
 		
 class GetFavoriteColorHandler(AbstractRequestHandler):
@@ -54,8 +62,13 @@ class GetFavoriteColorHandler(AbstractRequestHandler):
 		return(is_intent_name("GetFavoriteColor")(handler_input))
 		
 	def handle(self, handler_input):
-		speech = ""
-		
+		if 'favoriteColor' in handler_input.attributes_manager.session_attributes:
+			myFavoriteColor = handler_input.attributes_manager.session_attributes['favoriteColor']
+			speech = "Your favorite color is " + myFavoriteColor
+			
+		else:
+			speech = "I don't think I know your favorite color"
+
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
 		return handler_input.response_builder.response
@@ -66,7 +79,7 @@ class HelpHandler(AbstractRequestHandler):
 		return(is_request_type("LaunchRequest")(handler_input))
 		
 	def handle(self, handler_input):
-		speech = "Hi"
+		speech = "You can ask me to remember a color or to tell you what your favorite color is"
 		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
