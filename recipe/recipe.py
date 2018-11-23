@@ -13,6 +13,8 @@ from ask_sdk_model import Response
 import boto3
 from boto3 import resource
 
+import requests
+
 SKILL_NAME = "Recipe"
 
 sb = SkillBuilder()
@@ -20,6 +22,7 @@ logger = logging.getLogger()
 
 apiStart = "https://api.edamam.com/search?q="
 apiEnd = "&app_id=c1afdbf8&app_key=7f60627b97806fb6216e832af1204ff6"
+
 
 class DefaultHandler(AbstractRequestHandler):
 
@@ -50,9 +53,14 @@ class TellRecipe(AbstractRequestHandler):
 		
 				handler_input.attributes_manager.session_attributes['recipe'] = recipe;
 				
+				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
+				
+				r = requests.get(apiStart, params=paramsList)
+				
 				#speech = "Got it. The recipe is " + handler_input.attributes_manager.session_attributes['recipe']
 				#speech = apiRequest
-				speech = "Fine"
+				speech = r.url
+				#speech = "Fine"
 				
 			else:
 				speech = "Sorry, we had an issue"
