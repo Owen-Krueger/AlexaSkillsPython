@@ -20,7 +20,7 @@ SKILL_NAME = "Recipe"
 sb = SkillBuilder()
 logger = logging.getLogger()
 
-apiStart = "https://api.edamam.com/search?q="
+apiStart = "https://api.edamam.com/search?"
 apiEnd = "&app_id=c1afdbf8&app_key=7f60627b97806fb6216e832af1204ff6"
 
 
@@ -49,18 +49,24 @@ class TellRecipe(AbstractRequestHandler):
 			
 			if recipe is not None:
 		
-				apiRequest = apiStart + recipe + apiEnd
-		
 				handler_input.attributes_manager.session_attributes['recipe'] = recipe;
 				
 				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
 				
 				r = requests.get(apiStart, params=paramsList)
+				print(r.url)
+				data = r.json()
+				
+				print(str(r.status_code))
+				print(data['hits'][0])
+				print(str(data['hits'][0]['recipe']['label']))
+				
+				label = data['hits'][0]['recipe']['label']
+				source = data['hits'][0]['recipe']['source']
+				
+				speech = "Here's a recipe for " + label + " from " + source
 				
 				#speech = "Got it. The recipe is " + handler_input.attributes_manager.session_attributes['recipe']
-				#speech = apiRequest
-				speech = r.url
-				#speech = "Fine"
 				
 			else:
 				speech = "Sorry, we had an issue"
