@@ -36,6 +36,10 @@ class DefaultHandler(AbstractRequestHandler):
 			SimpleCard(SKILL_NAME, speech))
 		return handler_input.response_builder.response
 		
+class RecipeHelper():
+	def getRecipe(data, index):
+		return(data['hits'][index])
+		
 class TellRecipe(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
@@ -61,6 +65,10 @@ class TellRecipe(AbstractRequestHandler):
 				print(data['hits'][0])
 				print(str(data['hits'][0]['recipe']['label']))
 				
+				recipeFromHelper = RecipeHelper.getRecipe
+				
+				print("Recipe from class " + str(recipeFromHelper(data, 0)))
+				
 				label = data['hits'][0]['recipe']['label']
 				source = data['hits'][0]['recipe']['source']
 				
@@ -76,6 +84,13 @@ class TellRecipe(AbstractRequestHandler):
 			SimpleCard(SKILL_NAME, speech))
 			#.ask(reprompt)
 		return handler_input.response_builder.response
+		
+class NextRecipe(AbstractRequestHandler):
+	def can_handle(self, handler_input):
+		return(is_intent_name("NextRecipe")(handler_input))
+		
+	def handle(self, handler_input):
+		return("hi");
 		
 class HelpHandler(AbstractRequestHandler):
 	
@@ -103,6 +118,7 @@ class CancelOrStopHandler(AbstractRequestHandler):
 
 sb.add_request_handler(DefaultHandler())
 sb.add_request_handler(TellRecipe())
+sb.add_request_handler(NextRecipe())
 sb.add_request_handler(HelpHandler())
 sb.add_request_handler(CancelOrStopHandler())
 
