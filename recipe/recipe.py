@@ -37,9 +37,26 @@ class DefaultHandler(AbstractRequestHandler):
 		return handler_input.response_builder.response
 		
 class RecipeHelper():
+	def getJsonFromAPI(apiStart, paramsList):
+		r = requests.get(apiStart, params=paramsList)
+		return(r.json())
+	
 	def getRecipe(data, index):
 		return(data['hits'][index]['recipe'])
 		
+	def storeJson(handler_input, json):
+		handler_input.attributes_manager.session_attributes['recipeJSON'] = json
+		
+	def getJson(handler_input):
+		json = handler_input.attributes_manager.session_attributes['recipeJSON']
+		if json is not None:
+			return(json)
+		else:
+			return(None)
+	
+	def checkScreen():
+		return true
+				
 class TellRecipe(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
@@ -57,13 +74,8 @@ class TellRecipe(AbstractRequestHandler):
 				
 				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
 				
-				r = requests.get(apiStart, params=paramsList)
-				print(r.url)
-				data = r.json()
-				
-				print(str(r.status_code))
-				print(data['hits'][0])
-				print(str(data['hits'][0]['recipe']['label']))
+				data = RecipeHelper.getJsonFromAPI(apiStart, paramsList)
+				#RecipeHelper.storeJson(handler_input, data)
 				
 				recipeFromHelper = RecipeHelper.getRecipe(data,0)
 				
@@ -88,7 +100,22 @@ class NextRecipe(AbstractRequestHandler):
 		return(is_intent_name("NextRecipe")(handler_input))
 		
 	def handle(self, handler_input):
-		return("hi");
+		json = RecipeHelper.getJson(handler_input)
+		
+		if json is not None:
+			recipeFromHelper = RecipeHelper.getRecipe(json, 1)
+			
+			label = recipeFromHelper['label']
+			source = recipeFromHelper['source']
+			
+			speech = "Here's a recipe for " + label + " from " + source
+			
+		else:
+			speech = "Sorry, you haven't requested a recipe yet. Please request a recipe to continue"
+			
+		handler_input.response_builder.speak(speech).set_card(
+			SimpleCard(SKILL_NAME, speech))
+		return handler_input.response_builder.response
 		
 class HelpHandler(AbstractRequestHandler):
 	
