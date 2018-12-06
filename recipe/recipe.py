@@ -38,7 +38,7 @@ class DefaultHandler(AbstractRequestHandler):
 		
 class RecipeHelper():
 	def getRecipe(data, index):
-		return(data['hits'][index])
+		return(data['hits'][index]['recipe'])
 		
 class TellRecipe(AbstractRequestHandler):
 	
@@ -65,12 +65,10 @@ class TellRecipe(AbstractRequestHandler):
 				print(data['hits'][0])
 				print(str(data['hits'][0]['recipe']['label']))
 				
-				recipeFromHelper = RecipeHelper.getRecipe
+				recipeFromHelper = RecipeHelper.getRecipe(data,0)
 				
-				print("Recipe from class " + str(recipeFromHelper(data, 0)))
-				
-				label = data['hits'][0]['recipe']['label']
-				source = data['hits'][0]['recipe']['source']
+				label = recipeFromHelper['label']
+				source = recipeFromHelper['source']
 				
 				speech = "Here's a recipe for " + label + " from " + source
 				
