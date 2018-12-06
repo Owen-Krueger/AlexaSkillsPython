@@ -54,13 +54,12 @@ class TellRecipe(AbstractRequestHandler):
 				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
 				
 				r = requests.get(apiStart, params=paramsList)
-				
-				print("URL: " + r.url)
-				print("Status code: " + str(r.status_code))
-				
+				print(r.url)
 				data = r.json()
 				
-				print("Hits: " + data['hits'][0])
+				print(str(r.status_code))
+				print(data['hits'][0])
+				print(str(data['hits'][0]['recipe']['label']))
 				
 				label = data['hits'][0]['recipe']['label']
 				source = data['hits'][0]['recipe']['source']
