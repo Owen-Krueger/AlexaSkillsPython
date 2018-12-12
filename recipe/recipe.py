@@ -48,7 +48,10 @@ class RecipeHelper():
 		handler_input.attributes_manager.session_attributes['recipeJSON'] = json
 		
 	def getJson(handler_input):
-		json = handler_input.attributes_manager.session_attributes['recipeJSON']
+		if 'recipeJSON' in handler_input.attributes_manager.session_attributes:
+			json = handler_input.attributes_manager.session_attributes['recipeJSON']
+		else:
+			json = None
 		if json is not None:
 			return(json)
 		else:
@@ -75,7 +78,7 @@ class TellRecipe(AbstractRequestHandler):
 				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
 				
 				data = RecipeHelper.getJsonFromAPI(apiStart, paramsList)
-				#RecipeHelper.storeJson(handler_input, data)
+				RecipeHelper.storeJson(handler_input, data)
 				
 				recipeFromHelper = RecipeHelper.getRecipe(data,0)
 				
