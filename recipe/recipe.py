@@ -32,8 +32,6 @@ class DefaultHandler(AbstractRequestHandler):
 	def handle(self, handler_input):
 		speech = "You can ask me to tell you a food recipe!"
 		
-		#print(RecipeHelper.checkScreen())
-		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
 		return handler_input.response_builder.response
@@ -46,8 +44,9 @@ class RecipeHelper():
 	def getRecipe(data, index):
 		return(data['hits'][index]['recipe'])
 	
-	def checkScreen():
-		if context.System.device.supportedInterfaces.Display is None:
+	def checkScreen(handler_input):
+		print("In check Screen")
+		if handler_input.request_envelope.context.system.device.supported_interfaces.display is None:
 			return False
 		else:
 			return True
@@ -80,11 +79,9 @@ class TellRecipe(AbstractRequestHandler):
 				
 				speech = "Here's a recipe for " + label + " from " + source
 				
-				#speech = "Got it. The recipe is " + handler_input.attributes_manager.session_attributes['recipe']
 				
 			else:
 				speech = "Sorry, we had an issue"
-				#reprompt = "Try to ask me to tell you a different recipe"
 						
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
@@ -145,7 +142,7 @@ class CancelOrStopHandler(AbstractRequestHandler):
 		speech = "Goodbye"
 		
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech))
+			SimpleCard(SKILL_NAME, speech)).set_should_end_session(True)
 		return handler_input.response_builder.response
 
 sb.add_request_handler(DefaultHandler())
