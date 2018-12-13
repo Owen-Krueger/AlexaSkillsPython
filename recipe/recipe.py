@@ -32,6 +32,8 @@ class DefaultHandler(AbstractRequestHandler):
 	def handle(self, handler_input):
 		speech = "You can ask me to tell you a food recipe!"
 		
+		#print(RecipeHelper.checkScreen())
+		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech))
 		return handler_input.response_builder.response
@@ -45,7 +47,10 @@ class RecipeHelper():
 		return(data['hits'][index]['recipe'])
 	
 	def checkScreen():
-		return true
+		if context.System.device.supportedInterfaces.Display is None:
+			return False
+		else:
+			return True
 				
 class TellRecipe(AbstractRequestHandler):
 	
@@ -122,7 +127,7 @@ class NextRecipe(AbstractRequestHandler):
 class HelpHandler(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
-		return(is_request_type("LaunchRequest")(handler_input))
+		return(is_intent_name("AMAZON.HelpRequest")(handler_input))
 		
 	def handle(self, handler_input):
 		speech = "You can ask me to tell you a food recipe"
@@ -134,7 +139,7 @@ class HelpHandler(AbstractRequestHandler):
 class CancelOrStopHandler(AbstractRequestHandler):
 
 	def can_handle(self, handler_input):
-		return(is_request_type("LaunchRequest")(handler_input))
+		return(is_intent_name("AMAZON.StopIntent")(handler_input))
 		
 	def handle(self, handler_input):
 		speech = "Goodbye"
