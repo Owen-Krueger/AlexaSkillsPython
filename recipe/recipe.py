@@ -45,7 +45,12 @@ class RecipeHelper():
 		return(data['hits'][index]['recipe'])
 		
 	def storeJson(handler_input, json):
+		print("In store")
+		print("JSON: " + json)
 		handler_input.attributes_manager.session_attributes['recipeJSON'] = json
+		print("SESSION: " + str(handler_input.attributes_manager.session_attributes['recipeJSON']))
+		print("Done with store")
+		return(handler_input)
 		
 	def getJson(handler_input):
 		if 'recipeJSON' in handler_input.attributes_manager.session_attributes:
@@ -78,10 +83,12 @@ class TellRecipe(AbstractRequestHandler):
 				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
 				
 				data = RecipeHelper.getJsonFromAPI(apiStart, paramsList)
-				RecipeHelper.storeJson(handler_input, data)
-				
+				print("Starting store")
+				#handler_input = RecipeHelper.storeJson(handler_input, data)
+				handler_input.attributes_manager.session_attributes['recipeJSON'] = data
+				print("Out of store")
 				recipeFromHelper = RecipeHelper.getRecipe(data,0)
-				
+				print(recipeFromHelper)
 				label = recipeFromHelper['label']
 				source = recipeFromHelper['source']
 				
