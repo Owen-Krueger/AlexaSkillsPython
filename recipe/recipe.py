@@ -43,24 +43,6 @@ class RecipeHelper():
 	
 	def getRecipe(data, index):
 		return(data['hits'][index]['recipe'])
-		
-	def storeJson(handler_input, json):
-		print("In store")
-		print("JSON: " + json)
-		handler_input.attributes_manager.session_attributes['recipeJSON'] = json
-		print("SESSION: " + str(handler_input.attributes_manager.session_attributes['recipeJSON']))
-		print("Done with store")
-		return(handler_input)
-		
-	def getJson(handler_input):
-		if 'recipeJSON' in handler_input.attributes_manager.session_attributes:
-			json = handler_input.attributes_manager.session_attributes['recipeJSON']
-		else:
-			json = None
-		if json is not None:
-			return(json)
-		else:
-			return(None)
 	
 	def checkScreen():
 		return true
@@ -83,12 +65,11 @@ class TellRecipe(AbstractRequestHandler):
 				paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
 				
 				data = RecipeHelper.getJsonFromAPI(apiStart, paramsList)
-				print("Starting store")
-				#handler_input = RecipeHelper.storeJson(handler_input, data)
-				handler_input.attributes_manager.session_attributes['recipeJSON'] = data
-				print("Out of store")
+
+				handler_input.attributes_manager.session_attributes['recipeNumber'] = 0
+
 				recipeFromHelper = RecipeHelper.getRecipe(data,0)
-				print(recipeFromHelper)
+
 				label = recipeFromHelper['label']
 				source = recipeFromHelper['source']
 				
@@ -99,9 +80,9 @@ class TellRecipe(AbstractRequestHandler):
 			else:
 				speech = "Sorry, we had an issue"
 				#reprompt = "Try to ask me to tell you a different recipe"
-		
+						
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech))
+			SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
 			#.ask(reprompt)
 		return handler_input.response_builder.response
 		
@@ -110,10 +91,19 @@ class NextRecipe(AbstractRequestHandler):
 		return(is_intent_name("NextRecipe")(handler_input))
 		
 	def handle(self, handler_input):
-		json = RecipeHelper.getJson(handler_input)
+		if 'recipe' in handler_input.attributes_manager.session_attributes:
+			recipe = handler_input.attributes_manager.session_attributes['recipe']
+		else:
+			recipe = None
 		
-		if json is not None:
-			recipeFromHelper = RecipeHelper.getRecipe(json, 1)
+		if recipe is not None:
+			paramsList = {'q': recipe, 'app_id' : 'c1afdbf8', 'app_key' : '7f60627b97806fb6216e832af1204ff6'}
+			
+			data = RecipeHelper.getJsonFromAPI(apiStart, paramsList)
+			
+			recipeNumber = handler_input.attributes_manager.session_attributes['recipeNumber'] + 1
+
+			recipeFromHelper = RecipeHelper.getRecipe(data,recipeNumber)
 			
 			label = recipeFromHelper['label']
 			source = recipeFromHelper['source']
