@@ -51,6 +51,10 @@ class RecipeHelper():
 		else:
 			return True
 				
+	def addImage(handler_input, data):
+		if(checkScreen):
+			return False
+		return True
 class TellRecipe(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
@@ -139,7 +143,7 @@ class CancelOrStopHandler(AbstractRequestHandler):
 		return(is_intent_name("AMAZON.StopIntent")(handler_input))
 		
 	def handle(self, handler_input):
-		speech = "Goodbye"
+		speech = "Thank you for using the Recipe Skill"
 		
 		handler_input.response_builder.speak(speech).set_card(
 			SimpleCard(SKILL_NAME, speech)).set_should_end_session(True)
