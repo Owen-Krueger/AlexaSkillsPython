@@ -103,6 +103,8 @@ class NextRecipe(AbstractRequestHandler):
 			
 			recipeNumber = handler_input.attributes_manager.session_attributes['recipeNumber'] + 1
 
+			handler_input.attributes_manager.session_attributes['recipeNumber'] = recipeNumber
+			
 			recipeFromHelper = RecipeHelper.getRecipe(data,recipeNumber)
 			
 			label = recipeFromHelper['label']
