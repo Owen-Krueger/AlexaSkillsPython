@@ -125,12 +125,26 @@ class NextRecipe(AbstractRequestHandler):
 			source = recipeFromHelper['source']
 			
 			speech = "Here's a recipe for " + label + " from " + source
+			handler_input.response_builder.speak(speech).set_card(
+			ui.StandardCard(
+				title=SKILL_NAME,
+				text = speech,
+				image = ui.Image(
+					small_image_url= recipeFromHelper['image'],
+					large_image_url= recipeFromHelper['image']
+				)
+			)
+		).set_should_end_session(False)
 			
 		else:
 			speech = "Sorry, you haven't requested a recipe yet. Please request a recipe to continue"
 			
-		handler_input.response_builder.speak(speech).set_card(
-			ui.SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
+			handler_input.response_builder.speak(speech).set_card(
+				ui.SimpleCard(
+					title=SKILL_NAME,
+					text = speech
+				)
+			).set_should_end_session(False)
 		return handler_input.response_builder.response
 		
 class HelpHandler(AbstractRequestHandler):
