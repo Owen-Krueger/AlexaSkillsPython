@@ -7,7 +7,7 @@ from ask_sdk_core.dispatch_components import (
 from ask_sdk_core.utils import is_request_type, is_intent_name
 from ask_sdk_core.handler_input import HandlerInput
 
-from ask_sdk_model.ui import SimpleCard
+from ask_sdk_model import ui
 from ask_sdk_model import Response
 
 import boto3
@@ -32,8 +32,11 @@ class DefaultHandler(AbstractRequestHandler):
 	def handle(self, handler_input):
 		speech = "You can ask me to tell you a food recipe!"
 		
+		print("Starting check screen")
+		print("Has screen: " + str(RecipeHelper.checkScreen(handler_input)))
+		print("Finished check screen")
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech))
+			ui.SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
 		return handler_input.response_builder.response
 		
 class RecipeHelper():
@@ -51,10 +54,6 @@ class RecipeHelper():
 		else:
 			return True
 				
-	def addImage(handler_input, data):
-		if(checkScreen):
-			return False
-		return True
 class TellRecipe(AbstractRequestHandler):
 	
 	def can_handle(self, handler_input):
@@ -88,7 +87,16 @@ class TellRecipe(AbstractRequestHandler):
 				speech = "Sorry, we had an issue"
 						
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
+			ui.StandardCard(
+				title=SKILL_NAME,
+				text = speech,
+				image = ui.Image(
+					small_image_url= recipeFromHelper['image'],
+					large_image_url= recipeFromHelper['image']
+				)
+			)
+		).set_should_end_session(False)
+			#SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
 			#.ask(reprompt)
 		return handler_input.response_builder.response
 		
@@ -122,7 +130,7 @@ class NextRecipe(AbstractRequestHandler):
 			speech = "Sorry, you haven't requested a recipe yet. Please request a recipe to continue"
 			
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
+			ui.SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
 		return handler_input.response_builder.response
 		
 class HelpHandler(AbstractRequestHandler):
@@ -134,7 +142,7 @@ class HelpHandler(AbstractRequestHandler):
 		speech = "You can ask me to tell you a food recipe"
 		
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech))
+			ui.SimpleCard(SKILL_NAME, speech))
 		return handler_input.response_builder.response
 		
 class CancelOrStopHandler(AbstractRequestHandler):
@@ -143,10 +151,10 @@ class CancelOrStopHandler(AbstractRequestHandler):
 		return(is_intent_name("AMAZON.StopIntent")(handler_input))
 		
 	def handle(self, handler_input):
-		speech = "Thank you for using the Recipe Skill"
+		speech = "Goodbye"
 		
 		handler_input.response_builder.speak(speech).set_card(
-			SimpleCard(SKILL_NAME, speech)).set_should_end_session(True)
+			ui.SimpleCard(SKILL_NAME, speech)).set_should_end_session(True)
 		return handler_input.response_builder.response
 
 sb.add_request_handler(DefaultHandler())
