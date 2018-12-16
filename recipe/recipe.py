@@ -53,6 +53,9 @@ class RecipeHelper():
 			return False
 		else:
 			return True
+			
+	def getIngredients(data, index):
+		return(RecipeHelper.getRecipe(data, index)['ingredientLines'])
 				
 class TellRecipe(AbstractRequestHandler):
 	
@@ -81,23 +84,26 @@ class TellRecipe(AbstractRequestHandler):
 				source = recipeFromHelper['source']
 				
 				speech = "Here's a recipe for " + label + " from " + source
+				speechText = ("Recipe: " + label + "\nFrom: " + source + 
+				"\n\nIngredients: " + str(RecipeHelper.getIngredients(data, 0))[1:-1] + 
+				"\n\n URL: " + recipeFromHelper['url'])
 				
+				handler_input.response_builder.speak(speech).set_card(
+					ui.StandardCard(
+					title=label,
+					text = speechText,
+					image = ui.Image(
+						small_image_url= recipeFromHelper['image'],
+						large_image_url= recipeFromHelper['image']
+					)
+				)
+				).set_should_end_session(False)
 				
 			else:
 				speech = "Sorry, we had an issue"
-						
-		handler_input.response_builder.speak(speech).set_card(
-			ui.StandardCard(
-				title=SKILL_NAME,
-				text = speech,
-				image = ui.Image(
-					small_image_url= recipeFromHelper['image'],
-					large_image_url= recipeFromHelper['image']
-				)
-			)
-		).set_should_end_session(False)
-			#SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
-			#.ask(reprompt)
+				handler_input.response_builder.speak(speech).set_card(
+					SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
+				#.ask(reprompt)
 		return handler_input.response_builder.response
 		
 class NextRecipe(AbstractRequestHandler):
