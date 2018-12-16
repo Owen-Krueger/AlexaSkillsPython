@@ -32,9 +32,6 @@ class DefaultHandler(AbstractRequestHandler):
 	def handle(self, handler_input):
 		speech = "You can ask me to tell you a food recipe!"
 		
-		print("Starting check screen")
-		print("Has screen: " + str(RecipeHelper.checkScreen(handler_input)))
-		print("Finished check screen")
 		handler_input.response_builder.speak(speech).set_card(
 			ui.SimpleCard(SKILL_NAME, speech)).set_should_end_session(False)
 		return handler_input.response_builder.response
