@@ -140,10 +140,7 @@ class NextRecipe(AbstractRequestHandler):
 			speech = "Sorry, you haven't requested a recipe yet. Please request a recipe to continue"
 			
 			handler_input.response_builder.speak(speech).set_card(
-				ui.SimpleCard(
-					title=SKILL_NAME,
-					text = speech
-				)
+				ui.SimpleCard(SKILL_NAME, speech)
 			).set_should_end_session(False)
 		return handler_input.response_builder.response
 		
