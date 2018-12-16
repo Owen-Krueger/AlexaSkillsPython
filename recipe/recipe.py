@@ -131,10 +131,14 @@ class NextRecipe(AbstractRequestHandler):
 			source = recipeFromHelper['source']
 			
 			speech = "Here's a recipe for " + label + " from " + source
+			speechText = ("Recipe: " + label + "\nFrom: " + source + 
+				"\n\nIngredients: " + str(RecipeHelper.getIngredients(data, 0))[1:-1] + 
+				"\n\n URL: " + recipeFromHelper['url'])
+				
 			handler_input.response_builder.speak(speech).set_card(
 			ui.StandardCard(
 				title=SKILL_NAME,
-				text = speech,
+				text = speechText,
 				image = ui.Image(
 					small_image_url= recipeFromHelper['image'],
 					large_image_url= recipeFromHelper['image']
